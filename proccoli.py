@@ -1,58 +1,87 @@
-#!/usr/bin/python
 #
 # Contributors
-#   Seena Rowhani 100945353
-#   Shane Slatter 100946497
+# 	Shane Slatter 100946497
+# 	Seena Rowhani 100945353
 #
 # Description
-#   A process manager written in python
+# 	A process manager written in python
+#
 
-# System Tools
-import os
-import sys
+import urwid
+import psutil
 
-# Utilities
-from operator import isNumberType
-from getopt import getopt, error as OptionsError
+from random import randint
 
-# Getting Started
-#  https://github.com/seb-m/pyinotify/wiki/Handling-Events
-# Event Types
-#  https://github.com/seb-m/pyinotify/wiki/Events-types
-from pyinotify import WatchManager, ProcessEvent, AsyncNotifier
+processes = [psutil.Process(i) for i in psutil.pids()]
 
-# Async Library
-import asyncore
-
-class Proccoli (ProcessEvent):
-    def process_IN_CREATE(self, event):
-        print "Creating:", event.pathname
-    def process_IN_DELETE(self, event):
-        print "Removing:", event.pathname
-    def process_IN_MODIFY(self, event):
-        print "Modifying:", event
+def exit(key):
+	if key in ('q', 'Q'):
+		raise urwid.ExitMainLoop()
 
 def main():
-    try:
-        opts, args = getopt(sys.argv[1:], 'h', ['help'])
-    except OptionsError, error_msg:
-        print error_msg
-        print 'For more information try --help'
-        return 2
+	text_tasks = [
+		"Tasks:  ",
+		str(len(processes)), " total,   ",
+		str(len([i for i in processes if i.status() is 'running'])), " running,   ",
+		str(len([i for i in processes if i.status() is 'waiting'])), " waiting,   ",
+		str(len([i for i in processes if i.status() is 'stopped'])), " stopped,   ",
+		str(len([i for i in processes if i.status() is 'zombie'])),  " zombie",
+	]
 
-    # Initialization
-    proc_directory = os.list('/proc')
+	progress = [urwid.ProgressBar('body', 'progress', i, 100)
+		for i in psutil.cpu_percent(interval=1, percpu=True)]
 
-    # TODO: dict() could be better for modifications
-    processes = [int(i) for i in proc_directory if i.isdigit()]
+	cpuColumns = [urwid.Columns([
+		('fixed', 10, urwid.Text("CPU-{}%: ".format(i), align='left')),
+		('fixed', 3, urwid.Text(" [", align='right')),
+		('weight', 1, progress[i]),
+		('fixed', 3, urwid.Text(" ]", align='left')),
+		# add more
+		], 0, min_width=8) for i in range(0, len(progress))]
 
-    wm = WatchManager()
-    notif = AsyncNotifier(wm, Proccoli)
-    # Be able to differentiate different events coherently
-    watch_dog = wm.add_watch('/proc', mask, rec=True)
+	blank = urwid.Divider()
 
-    asyncore.loop()
-    return 0
+	listbox_content = [
+		blank,
+		urwid.Pile(cpuColumns),
+		blank,
+		urwid.AttrWrap(urwid.Columns([
+			('fixed', 10, urwid.Text("STATUS", align='right')),
+			('fixed', 10, urwid.Text("PID",  align='right')),
+			('fixed', 15, urwid.Text("USER", align='right')),
+			('fixed', 10, urwid.Text("MEM %", align='right')),
+			# add more
+			], 0, min_width=8), 'header'),
+		urwid.Columns([
+			('fixed', 10, urwid.Text([str(i.status()) + "\n" for i in processes],  align='right')),
+			('fixed', 10, urwid.Text([str(i.pid) + "\n" for i in processes],  align='right')),
+			('fixed', 15, urwid.Text([i.username() + "\n" for i in processes], align='right')),
+			('fixed', 10, urwid.Text([str(int(i.memory_percent() * 100)) + "%\n" for i in processes], align='right')),
+			# add more
+			], 0, min_width=8),
+		blank,
+		]
 
-if __name__ == '__main__':
-    sys.exit(main())
+	header = urwid.AttrWrap(urwid.Text(text_tasks), 'header')
+	listbox = urwid.ListBox(urwid.SimpleListWalker(listbox_content))
+	frame = urwid.Frame(urwid.AttrWrap(listbox, 'body'), header=header)
+
+	palette = [
+		('header', 'white', 'dark red', 'bold'),
+		('progress', 'white', 'light blue', 'bold'),
+		('body', 'black', 'light gray', 'standout'),
+	]
+
+	def refresh(loop, data):
+		cpu_percentages = psutil.cpu_percent(interval=1, percpu=True)
+		for i in range(0, len(cpu_percentages)):
+			progress[i].set_completion(cpu_percentages[i])
+		loop.set_alarm_in(2, refresh)
+
+	mainloop = urwid.MainLoop(frame, palette, unhandled_input=exit)
+	mainloop.set_alarm_in(2, refresh)
+	mainloop.run()
+
+
+if __name__=='__main__':
+	main()
