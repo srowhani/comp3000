@@ -5,28 +5,11 @@
 #   cpu_perc -> Percentage of resources allocated in processer
 #   state -> One of [Running]
 #
-class Process (object):
-    RUNNING = 1
-    WAITING = 2
-    STOPPED = 3
-    ZOMBIE  = 4
-    def __init__(self, config = dict()):
-        self.config = config
+from Component import GenericComponent
+class Process (GenericComponent):
 
-        self.cpu_perc = config.cpu_perc
-        self.memory_alloc = config.memory_alloc
-        self.current_state = config.cpu
+    def __init__(self):
+        super(GenericComponent, self)
+        print(self.toString())
 
-        # Identifiers
-        self.uid = config.uid
-        self.gid = config.gid
-
-        # Scheduling
-        self.policy = config.policy
-
-        # ... etc
-    # Getters and Setters
-    def get (attr):
-        return self.config[attr]
-    def set (attr, value):
-        self.config[attr] = value
+a = Process()
