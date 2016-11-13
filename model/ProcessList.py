@@ -1,35 +1,28 @@
 import os
-from Process import Process
+from ProcessListWalker import ProcessListWalker as pl
+from urwid import ListBox, MainLoop, ExitMainLoop
 
-from Component import GenericComponent
-from urwid import Columns, ListBox, SimpleListWalker, MainLoop, ExitMainLoop
-PROC_DIR = '/proc'
-class ProcessList(GenericComponent):
-    process_widgets = dict()
+class ProcessList(ListBox):
+    m_walker = None
     def __init__ (self):
+        self.m_walker = pl()
+        super(ProcessList, self).__init__(self.m_walker)
         self.update()
 
     def update (self):
-        pids = [pid for pid in os.listdir(PROC_DIR) if pid.isdigit()]
-        rendered_columns = []
-        for pid in pids:
-            if pid not in self.process_widgets:
-                self.process_widgets[pid] = Process(int(pid))
-            rendered_columns.append(self.process_widgets[pid].update())
-        return ListBox(SimpleListWalker(rendered_columns))
+        self.m_walker.update()
 
 # Testing
 if __name__ == '__main__':
     pl = ProcessList()
-    test_processes = pl.update()
 
     def exit (p):
         raise ExitMainLoop()
     def refresh(loop, data):
-        test_procceses = pl.update()
-        loop.set_alarm_in(2, refresh)
+        pl.update()
+        loop.set_alarm_in(1, refresh)
 
-    main_loop = MainLoop(test_processes, unhandled_input=exit)
-    main_loop.set_alarm_in(2, refresh)
+    main_loop = MainLoop(pl, unhandled_input=exit)
+    main_loop.set_alarm_in(1, refresh)
 
     main_loop.run()
