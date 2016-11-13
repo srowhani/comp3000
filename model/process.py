@@ -10,7 +10,6 @@ class Process (GenericComponent):
     def __init__(self, pid):
         self.pid = pid
         self.process = _Process(pid)
-        self.update()
 
     # Returns Urwid Widget
     def update (self):
