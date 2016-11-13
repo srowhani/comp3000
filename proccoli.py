@@ -77,14 +77,16 @@ def main():
 		cpu_percentages = psutil.cpu_percent(interval=1, percpu=True)
 		for i in range(0, len(cpu_percentages)):
 			progress[i].set_completion(cpu_percentages[i])
-		listbox = urwid.ListBox(urwid.SimpleListWalker(listbox_content))
-		urwid.Columns([
+		c = urwid.Columns([
 			('fixed', 10, urwid.Text([str(i.status()) + "\n" for i in processes],  align='right')),
 			('fixed', 10, urwid.Text([str(i.pid) + "\n" for i in processes],  align='right')),
 			('fixed', 15, urwid.Text([i.username() + "\n" for i in processes], align='right')),
 			('fixed', 10, urwid.Text([str(int(i.memory_percent() * 100)) + "%\n" for i in processes], align='right')),
 			# add more
 		], 0, min_width=8)
+
+		listbox = urwid.ListBox(urwid.SimpleListWalker(listbox_content))
+
 		loop.set_alarm_in(2, refresh)
 
 
