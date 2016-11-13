@@ -1,4 +1,3 @@
-from Component import GenericComponent
 from psutil import Process as _Process
 from urwid import Pile, Columns, Text, MainLoop, ListBox, SimpleListWalker, ExitMainLoop
 
