@@ -8,9 +8,9 @@ PROC_DIR = '/proc'
 
 class ProcessListWalker(SimpleListWalker):
     process_dict = {} # check if process already exists in O(1)
-
+    process_list = []
     def __init__ (self):
-        super(ProcessListWalker, self).__init__([])
+        super(ProcessListWalker, self).__init__(self.process_list)
         self.update()
 
     def update (self):
@@ -22,6 +22,7 @@ class ProcessListWalker(SimpleListWalker):
                 p = Process(pid)
                 self.process_dict[pid] = p
                 self.append(p)
+        self.sort(key = lambda x: x.cpu_perc, reverse=True)
 
 # Testing
 if __name__ == '__main__':
