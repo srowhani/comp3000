@@ -1,52 +1,48 @@
 
+import time
 from urwid import ProgressBar, AttrWrap, ExitMainLoop, MainLoop, ListBox, SimpleListWalker
-from time import sleep
 from Palette import *
 
-class CPUMeter():
+class CPUMeter(SimpleListWalker):
+	cpu_meter = {}
 
-	def __init__ (self):
+	def __init__(self):
+		super(CPUMeter, self).__init__(self)
 		self.update()
 
-	def update (self):
-		cpu_meter = []
+	def update(self):
+		c1 = [i.split() for i in [line.strip() for line in open('/proc/stat')]]
+		time.sleep(0.5)
+		c2 = [i.split() for i in [line.strip() for line in open('/proc/stat')]]
 
-		cpu1 = [i.split() for i in [line.strip() for line in open('/proc/stat')]]
-		sleep(0.8)
-		cpu2 = [i.split() for i in [line.strip() for line in open('/proc/stat')]]
+		# Starts at 1 to skip first cpu
+		for i in range(1,len(c1)):
+			if 'cpu' in c1[i][0]:
+				top = int(c1[i][1])+int(c1[i][2])+int(c1[i][3])- \
+							int(c2[i][1])-int(c2[i][2])-int(c2[i][3])
+				btm = int(c1[i][1])+int(c1[i][2])+int(c1[i][3])+int(c1[i][4])- \
+							int(c2[i][1])-int(c2[i][2])-int(c2[i][3])-int(c2[i][4])*1.0
+				if i in self.cpu_meter:
+					self.cpu_meter[i] = (top/btm*100)
+					self[i-1].set_completion(self.cpu_meter[i])
+				else:
+					self.cpu_meter[i] = (top/btm*100)
+					self.append(ProgressBar('body', 'progress', self.cpu_meter[i], 100))	
 
-		# Calculate cpu percentage /100
-		for i in range(1,len(cpu1)):
-			if 'cpu' in cpu1[i][0]:
-				top = int(cpu1[i][1])+int(cpu1[i][2])+int(cpu1[i][3])- \
-							int(cpu2[i][1])-int(cpu2[i][2])-int(cpu2[i][3])
-				btm = int(cpu1[i][1])+int(cpu1[i][2])+int(cpu1[i][3])+int(cpu1[i][4])- \
-							int(cpu2[i][1])-int(cpu2[i][2])-int(cpu2[i][3])-int(cpu2[i][4])*1.0
-				cpu_meter.append((top/btm*100))
-
-		# Testing
-		#print cpu_meter[0]
-
-		progress = [ProgressBar('body', 'progress', cpu_meter[i], 100) for i in range(len(cpu_meter))]
-
-		for i in range(len(progress)):
-			progress[i].set_completion(cpu_meter[i])
-
-		return progress
-		#return AttrWrap(ListBox(SimpleListWalker(progress)), 'body')
-
+# Testing
 if __name__ == '__main__':
 	
-	test = CPUMeter().update()
+	cm = CPUMeter()
+	lb = ListBox(cm)
 
 	def exit(key):
 		if key in ('q', 'Q'):
 			raise ExitMainLoop()
 
 	def refresh(loop, data):
-		test = CPUMeter().update()
-		loop.set_alarm_in(1, refresh)
+		cm.update()
+		loop.set_alarm_in(0.5, refresh)
 
-	main_loop = MainLoop(test, palette, unhandled_input=exit)
-	main_loop.set_alarm_in(1, refresh)
+	main_loop = MainLoop(lb, palette, unhandled_input=exit)
+	main_loop.set_alarm_in(0.5, refresh)
 	main_loop.run()
