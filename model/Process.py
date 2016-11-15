@@ -1,9 +1,9 @@
 import os, sys, time
 from psutil import cpu_count, Process as _Process
-from urwid import Pile, Columns, Text, MainLoop, ListBox, SimpleListWalker, ExitMainLoop
+from urwid import AttrMap, Button, Pile, Columns, Text, MainLoop, ListBox, SimpleListWalker, ExitMainLoop, connect_signal
 from collections import namedtuple
 # reference https://github.com/giampaolo/psutil/blob/88ea5e0b2cc15c37fdeb3e38857f6dab6fd87d12/psutil/_pslinux.py
-class Process (Pile):
+class Process (AttrMap):
     # Internals
     pid = None
     process = None
@@ -14,14 +14,6 @@ class Process (Pile):
     last_proc_cpu = None
 
     _timer = getattr(time, 'monotonic', time.time)
-
-    # Internal widget list
-    w_status = None
-    w_pid = None
-    w_name = None
-    w_pname = None
-    w_mem = None
-    w_cpu = None
 
     # Constants
     TICKS = os.sysconf("SC_CLK_TCK")
@@ -38,14 +30,21 @@ class Process (Pile):
         "K": 'wake kill',
         "W": 'waking'
     }
+
     CPUTIMES = namedtuple('pcputimes', [
         'user',
         'system',
         'children_user',
         'children_system'
     ])
-    # Initialize Component
-    def __init__(self, pid):
+
+    def __init__(self, pid, cb):
+        """
+            @method __init__
+            @param pid - Process id
+            @param cb  - Intended for dynamic updates to parent
+            Initializes all internal to the component.
+        """
         self.pid = pid
         self.process = p = _Process(pid)
 
@@ -53,15 +52,15 @@ class Process (Pile):
 
         self.w_pid = Text(str(pid))
         self.w_name = Text(p.username())
-        self.w_pname = Text(self.pget_name())
+        self.w_pname = Text(self.pget_pname())
         self.w_status = Text('')
         self.w_mem = Text('')
         self.w_cpu = Text('', align='center')
 
-
+        self.cursor_cb = cb
         self.update()
 
-        self.repr = [
+        v = [
             Columns([
                 self.w_status,
                 self.w_pid,
@@ -71,22 +70,63 @@ class Process (Pile):
                 self.w_pname
             ])
         ]
-        super(Process, self).__init__(self.repr)
+        b = Button('')
+        b._w = Pile(v)
+        connect_signal(b, 'click', self.on_click)
+
+        super(Process, self).__init__(b, None, focus_map='reversed')
+
+    def on_click (self, item):
+        """
+            @method on_click
+            @param item - Item being interacted with
+            connect_signal handler for click event.
+            As of now the intended usage is managing the cursor.
+        """
+        self.cursor_cb(self)
+    def selectable (self):
+        """
+            @Override urwid.Widget.selectable
+            @method selectable
+            Makes it so that our item is able to be selected
+            from the ListWalker
+        """
+        return True
+
+    def keypress (self, size, key):
+        """
+            @Override urwid.Widget
+            @method keypress
+            @param size - size of the widget taking in the keypress
+            @param key  - char repr the key which was pressed
+            Handle keypress from context of ProcessListWalker.
+            Override intended to determine if the cursor should
+            stay at the top, or allow scrolling.
+        """
+        self.cursor_cb(key)
+        return key
 
     def update (self):
-        """ Update method called to redraw the widget """
+        """
+            @method update
+            Update method called to redraw the widget
+        """
         p = self.process
 
         self.stats = self.read_stat()
         self.w_status.set_text(self.pget_status())
-        self.w_mem.set_text(str(int(p.memory_percent() * 100)))
+        self.w_mem.set_text(str(int(p.memory_percent())))
         self.cpu_perc = cpu = self.pget_cpu()
         self.w_cpu.set_text('%.1f' % (cpu))
 
     def read_stat (self):
-        """ Read the stat file """
+        """
+            @method read_stat
+            Read /proc/{proc_number}/stat to parse information
+            regarding the process.
+        """
         f_name = '%s/%s/stat' % ('/proc', self.pid)
-
+        data = None
         try:
             f = open(f_name, 'rb')
             data = f.read()
@@ -97,14 +137,20 @@ class Process (Pile):
             pat = data.rfind(b')')
             name  = data[data.find(b'(') + 1:pat]
             return [name] + data[pat + 2:].split()
-
+        return None
     def pget_status (self):
-        """ Retrieves the status of the proc """
+        """
+            @method pget_status
+            Retrieves the status of the proc
+        """
         l = self.stats[1]
         return self.PROC_STATS[l]
 
     def pget_cpu_times (self):
-        """ Returns cpu times in namedtuple """
+        """
+            @method pget_cpu_times
+            Returns cpu times in namedtuple
+        """
 
         stats = self.stats
         u_t = float(stats[12]) / self.TICKS # uptime
@@ -114,7 +160,10 @@ class Process (Pile):
         return self.CPUTIMES(u_t, u_st, c_utime, c_stime)
 
     def pget_cpu (self):
-        """ Returns cpu alloc of current proc """
+        """
+            @method pget_cpu
+            Returns cpu alloc of current proc
+        """
         times = self.pget_cpu_times()
         num_cpus = cpu_count()
         st1 = self.last_sys_cpu
@@ -139,12 +188,19 @@ class Process (Pile):
             perc = overall_perc * (num_cpus or 1)
             return round(perc, 1)
 
-    def pget_name(self):
-        """ Gets the name of the process """
+    def pget_pname(self):
+        """
+            @method pget_pname
+            Gets the name of the process
+        """
         return self.stats[0]
-# Testing
+
+"""
+    Testing
+"""
 if __name__ == '__main__':
     def exit (p):
-        """"""
+        if p is 'q':
+            raise ExitMainLoop()
     lb = ListBox(SimpleListWalker([Process(1)]))
     MainLoop(lb, unhandled_input=exit).run()
