@@ -1,10 +1,9 @@
 
-import urwid
+from urwid import ProgressBar, AttrWrap, ExitMainLoop, MainLoop, ListBox, SimpleListWalker
 from time import sleep
-from math import ceil
-from Component import GenericComponent
+from Palette import *
 
-class CPUMeter (GenericComponent):
+class CPUMeter():
 
 	def __init__ (self):
 		self.update()
@@ -13,9 +12,10 @@ class CPUMeter (GenericComponent):
 		cpu_meter = []
 
 		cpu1 = [i.split() for i in [line.strip() for line in open('/proc/stat')]]
-		sleep(0.5)
+		sleep(0.8)
 		cpu2 = [i.split() for i in [line.strip() for line in open('/proc/stat')]]
 
+		# Calculate cpu percentage /100
 		for i in range(1,len(cpu1)):
 			if 'cpu' in cpu1[i][0]:
 				top = int(cpu1[i][1])+int(cpu1[i][2])+int(cpu1[i][3])- \
@@ -24,14 +24,16 @@ class CPUMeter (GenericComponent):
 							int(cpu2[i][1])-int(cpu2[i][2])-int(cpu2[i][3])-int(cpu2[i][4])*1.0
 				cpu_meter.append((top/btm*100))
 
-		progress = [urwid.ProgressBar(cpu_meter[i], 100) for i in range(len(cpu_meter))]
+		# Testing
+		#print cpu_meter[0]
+
+		progress = [ProgressBar('body', 'progress', cpu_meter[i], 100) for i in range(len(cpu_meter))]
 
 		for i in range(len(progress)):
 			progress[i].set_completion(cpu_meter[i])
 
 		return progress
-		#return urwid.ListBox(urwid.SimpleListWalker(progress))
-
+		#return AttrWrap(ListBox(SimpleListWalker(progress)), 'body')
 
 if __name__ == '__main__':
 	
@@ -39,12 +41,12 @@ if __name__ == '__main__':
 
 	def exit(key):
 		if key in ('q', 'Q'):
-			raise urwid.ExitMainLoop()
+			raise ExitMainLoop()
 
 	def refresh(loop, data):
 		test = CPUMeter().update()
 		loop.set_alarm_in(1, refresh)
 
-	main_loop = urwid.MainLoop(test, unhandled_input=exit)
+	main_loop = MainLoop(test, palette, unhandled_input=exit)
 	main_loop.set_alarm_in(1, refresh)
 	main_loop.run()

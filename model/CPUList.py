@@ -1,11 +1,10 @@
 
-import urwid
+from urwid import Columns, AttrWrap, Text, SimpleListWalker, ListBox, ExitMainLoop, MainLoop
 from time import sleep
-from math import ceil
-from Component import GenericComponent
 from CPUMeter import CPUMeter
+from Palette import *
 
-class CPUList (GenericComponent):
+class CPUList ():
 
 	def __init__ (self):
 		self.update()
@@ -19,30 +18,31 @@ class CPUList (GenericComponent):
 			if 'cpu' in stat[i][0]:
 				cpu.append(stat[i][0])
 
-		meter = CPUMeter().update()
+		cpu_meter = CPUMeter().update()
 
-		cpuColumns = [urwid.Columns([
-			('fixed', 8, urwid.Text(cpu[i], align='left')),
-			('fixed',  3, urwid.Text(" [", align='right')),
-			('weight', 1, meter[i]),
-			('fixed',  3, urwid.Text(" ]", align='left')),
+		cpuColumns = [Columns([
+			('fixed',  8, Text(cpu[i], align='left')),
+			('fixed',  3, Text(" [", align='right')),
+			('weight', 1, cpu_meter[i]),
+			('fixed',  3, Text(" ]", align='left')),
 			], 0, min_width=8) for i in range(len(cpu))]
 
 		#return cpuColumns
-		return urwid.ListBox(urwid.SimpleListWalker(cpuColumns))
+		return AttrWrap(ListBox(SimpleListWalker(cpuColumns)), 'body')
+
 
 if __name__ == '__main__':
 
-	test = CPUList().update()
+	test = AttrWrap(CPUList().update(), 'body')
 
 	def exit(key):
 		if key in ('q', 'Q'):
-			raise urwid.ExitMainLoop()
+			raise ExitMainLoop()
 
 	def refresh(loop, data):
-		test = CPUList().update()
-		loop.set_alarm_in(2, refresh)
+		test = AttrWrap(CPUList().update(), 'body')
+		loop.set_alarm_in(1, refresh)
 
-	main_loop = urwid.MainLoop(test, unhandled_input=exit)
-	main_loop.set_alarm_in(2, refresh)
+	main_loop = MainLoop(test, palette, unhandled_input=exit)
+	main_loop.set_alarm_in(1, refresh)
 	main_loop.run()
