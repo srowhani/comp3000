@@ -1,7 +1,12 @@
 import os
 from ProcessListWalker import ProcessListWalker
-from urwid import ListBox, MainLoop, ExitMainLoop
+from Palette import palette
 
+from urwid import (
+    ListBox,
+    MainLoop,
+    ExitMainLoop
+)
 
 class ProcessList(ListBox):
     m_walker = None
@@ -35,7 +40,7 @@ if __name__ == '__main__':
         pl.update()
         loop.set_alarm_in(1, refresh)
 
-    main_loop = MainLoop(pl, palette=[('reversed', 'standout', ''), ('popbg', 'white', 'dark blue')], pop_ups=True, unhandled_input=exit)
+    main_loop = MainLoop(pl, palette=palette, pop_ups=True, unhandled_input=exit)
     main_loop.set_alarm_in(1, refresh)
 
     main_loop.run()

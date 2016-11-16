@@ -1,8 +1,13 @@
 import os
 
 from Process import Process
-
-from urwid import ListBox, SimpleFocusListWalker, MainLoop, ExitMainLoop
+from Palette import palette
+from urwid import (
+    ListBox,
+    SimpleFocusListWalker,
+    MainLoop,
+    ExitMainLoop
+)
 
 PROC_DIR = '/proc'
 
@@ -72,7 +77,7 @@ if __name__ == '__main__':
         pl.update()
         loop.set_alarm_in(1, refresh)
 
-    main_loop = MainLoop(lb, palette=[('reversed', 'standout', ''), ('popbg', 'white', 'dark blue')], pop_ups=True, unhandled_input=exit)
+    main_loop = MainLoop(lb, palette=palette, pop_ups=True, unhandled_input=exit)
     main_loop.set_alarm_in(1, refresh)
 
     main_loop.run()
