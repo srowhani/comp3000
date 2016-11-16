@@ -1,5 +1,6 @@
 import os, sys, time
 from psutil import cpu_count, Process as _Process
+from ProcessItemMenu import ProcessPopUp
 from urwid import AttrMap, Button, Pile, Columns, Text, MainLoop, ListBox, SimpleListWalker, ExitMainLoop, connect_signal
 from collections import namedtuple
 # reference https://github.com/giampaolo/psutil/blob/88ea5e0b2cc15c37fdeb3e38857f6dab6fd87d12/psutil/_pslinux.py
@@ -38,7 +39,7 @@ class Process (AttrMap):
         'children_system'
     ])
 
-    def __init__(self, pid, cb):
+    def __init__(self, pid, cb_cursor, cb_remove):
         """
             @method __init__
             @param pid - Process id
@@ -57,7 +58,10 @@ class Process (AttrMap):
         self.w_mem = Text('')
         self.w_cpu = Text('', align='center')
 
-        self.cursor_cb = cb
+        # callbacks to parent
+        self.cb_cursor = cb_cursor
+        self.cb_remove = cb_remove
+
         self.update()
 
         v = [
@@ -72,9 +76,10 @@ class Process (AttrMap):
         ]
         b = Button('')
         b._w = Pile(v)
+        self.popup = ProcessPopUp(b, self)
         connect_signal(b, 'click', self.on_click)
 
-        super(Process, self).__init__(b, None, focus_map='reversed')
+        super(Process, self).__init__(self.popup, None, focus_map='reversed')
 
     def on_click (self, item):
         """
@@ -83,7 +88,9 @@ class Process (AttrMap):
             connect_signal handler for click event.
             As of now the intended usage is managing the cursor.
         """
-        self.cursor_cb(self)
+        self.item_selected()
+        self.cb_cursor(self)
+        return True
     def selectable (self):
         """
             @Override urwid.Widget.selectable
@@ -103,9 +110,16 @@ class Process (AttrMap):
             Override intended to determine if the cursor should
             stay at the top, or allow scrolling.
         """
-        self.cursor_cb(key)
+        if key is 'enter':
+            self.item_selected()
+        self.cb_cursor(key)
         return key
 
+    def item_selected (self):
+        """
+            Handle the action of selecting an item
+        """
+        self.popup.open()
     def update (self):
         """
             @method update
@@ -130,9 +144,9 @@ class Process (AttrMap):
         try:
             f = open(f_name, 'rb')
             data = f.read()
-        except IOError:
+        except:
             print 'Could not read file: %s' % (f_name)
-
+            self.cb_remove(self)
         if data:
             pat = data.rfind(b')')
             name  = data[data.find(b'(') + 1:pat]
@@ -202,5 +216,5 @@ if __name__ == '__main__':
     def exit (p):
         if p is 'q':
             raise ExitMainLoop()
-    lb = ListBox(SimpleListWalker([Process(1)]))
-    MainLoop(lb, unhandled_input=exit).run()
+    lb = ListBox(SimpleListWalker([Process(1, lambda x: x, lambda: x)]))
+    MainLoop(lb, palette=[('reversed', 'standout', ''), ('popbg', 'white', 'dark blue')], pop_ups=True, unhandled_input=exit).run()
