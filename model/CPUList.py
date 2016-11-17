@@ -12,7 +12,7 @@ class CPUList(ListBox):
 
 	def __init__(self):
 		"""
-				Initializes the widgets
+			Initializes the widgets
 		"""
 		self.cpu_meter = CPUMeter()
 		super(CPUList, self).__init__(self.cpu_columns)
@@ -20,8 +20,8 @@ class CPUList(ListBox):
 
 	def update(self):
 		"""
-				Stores all CPU widgets
-				Updates child component
+			Stores all CPU widgets
+			Updates child component
 		"""
 		stat = self.cpu_meter.readStat()
 

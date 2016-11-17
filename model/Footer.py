@@ -14,7 +14,7 @@ class Footer(AttrMap):
 
 	def __init__(self):
 		"""
-				Initializes the widget
+			Initializes the widget
 		"""
 		self.footer = Text(self.footer_text)
 		super(Footer, self).__init__(self.footer, 'header')

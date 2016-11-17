@@ -10,14 +10,14 @@ class CPUMeter(SimpleListWalker):
 
 	def __init__(self):
 		"""
-				Initializes the widget
+			Initializes the widget
 		"""
 		super(CPUMeter, self).__init__(self)
 		self.update()
 
 	def update(self):
 		"""
-				Calculates cpu percentage
+			Calculates cpu percentage
 		"""
 		c1 = self.readStat()
 		time.sleep(0.5)
@@ -39,7 +39,7 @@ class CPUMeter(SimpleListWalker):
 
 	def readStat(self):
 		"""
-				Returns list of CPU info
+			Returns list of CPU info
 		"""
 		return [i.split() for i in [line.strip() for line in open('/proc/stat')]]
 
