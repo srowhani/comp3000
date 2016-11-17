@@ -1,8 +1,9 @@
 import os, sys
+import ProcessItemDialog
+
 from time import time, sleep
 from datetime import datetime
 from psutil import cpu_count, boot_time, Process as _Process
-from ProcessItemDialog import ProcessItemDialog
 from collections import namedtuple
 from urwid import (
     AttrMap,
@@ -90,7 +91,7 @@ class Process (AttrMap):
         ]
         b = Button('')
         b._w = Pile(v)
-        self.popup = ProcessItemDialog(b, self)
+        self.popup = ProcessItemDialog.ProcessItemDialog(b, self)
         connect_signal(b, 'click', self.on_click)
 
         super(Process, self).__init__(self.popup, None, focus_map='reversed')
