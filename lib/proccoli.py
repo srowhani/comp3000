@@ -68,9 +68,13 @@ except AttributeError:
 
 
 
-def proccoli_sig(*args):
-  return _proccoli.proccoli_sig(*args)
-proccoli_sig = _proccoli.proccoli_sig
+def send_signal(*args):
+  return _proccoli.send_signal(*args)
+send_signal = _proccoli.send_signal
+
+def read_file(*args):
+  return _proccoli.read_file(*args)
+read_file = _proccoli.read_file
 # This file is compatible with both classic and new-style classes.
 
 
