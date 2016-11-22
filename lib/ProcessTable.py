@@ -13,11 +13,12 @@ from urwid import (
     AttrMap,
     AttrWrap,
     BoxAdapter,
+    connect_signal,
     ExitMainLoop
 )
 
 class ProcessTable(AttrMap):
-    def __init__ (self, num_rows=20, w=(12, 8, 15, 10, 10, 10, 15)):
+    def __init__ (self, num_rows=20, w=(12, 8, 15, 12, 12, 12, 15)):
         """
             @method __init__
             Initializes the widget
@@ -27,11 +28,12 @@ class ProcessTable(AttrMap):
         self.w_status = Button('Status')
         self.w_pid = Button('PID')
         self.w_name = Button('Name')
-        self.w_cpu = Button('CPU %')
+        self.w_cpu = Button('CPU % V')
         self.w_mem = Button('MEM %')
         self.w_up = Button('Uptime')
         self.w_pname = Button('Process')
-        self.header_buttons = [
+
+        self.header_buttons = h = [
             self.w_status,
             self.w_pid,
             self.w_name,
@@ -40,19 +42,15 @@ class ProcessTable(AttrMap):
             self.w_up,
             self.w_pname
         ]
+
         for button in self.header_buttons:
             button._label.align = 'center'
 
         m_header = AttrMap(
-            Columns([
-                ('fixed', w[0], self.w_status),
-                ('fixed', w[1], self.w_pid),
-                ('fixed', w[2], self.w_name),
-                ('fixed', w[3], self.w_cpu),
-                ('fixed', w[4], self.w_mem),
-                ('fixed', w[5], self.w_up),
-                ('fixed', w[6], self.w_pname)
-            ]), 'invert'
+            Columns(
+                [('fixed', w[i], h[i]) for i in range(0, len(h))]
+            ),
+            'invert'
         )
         m_lb = ListBox(SimpleListWalker([
             m_header,
