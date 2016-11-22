@@ -10,12 +10,12 @@ from urwid import (
 
 class ProcessList(ListBox):
     m_walker = None
-    def __init__ (self):
+    def __init__ (self, w=(12, 8, 15, 10, 10, 10, 15)):
         """
             @method __init__
             Initializes the widget
         """
-        self.m_walker = ProcessListWalker()
+        self.m_walker = ProcessListWalker(w)
         super(ProcessList, self).__init__(self.m_walker)
         self.update()
 

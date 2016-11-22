@@ -18,11 +18,12 @@ class ProcessListWalker(SimpleFocusListWalker):
     at_top = True
     sort_var = 'cpu_perc'
     asc=True
-    def __init__ (self):
+    def __init__ (self, w=(12, 8, 15, 10, 10, 10, 15)):
         """
             @method __init__
             Initializes the widgets
         """
+        self.w = w
         super(ProcessListWalker, self).__init__(self.process_list)
         self.update()
     def update (self):
@@ -37,7 +38,7 @@ class ProcessListWalker(SimpleFocusListWalker):
             if pid in self.process_dict: # it already exists
                 self.process_dict[pid].update()
             else:
-                p = Process(pid, self.item_focus, self.item_remove)
+                p = Process(pid, self.item_focus, self.item_remove, self.w)
                 self.process_dict[pid] = p
                 self.append(p)
         self.sort(key = lambda x: getattr(x, self.sort_var), reverse=self.asc)
