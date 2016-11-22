@@ -53,7 +53,7 @@ class Process (AttrMap):
         'children_system'
     ])
 
-    def __init__(self, pid, cb_cursor, cb_remove):
+    def __init__(self, pid, cb_cursor, cb_remove, w=(12, 8, 15, 10, 10, 10, 15)):
         """
             @method __init__
             @param pid - Process id
@@ -69,24 +69,24 @@ class Process (AttrMap):
         self.cb_remove = cb_remove
 
         if self.stats is not None:
-            self.w_pid = Text(str(pid))
-            self.w_name = Text(p.username())
-            self.w_pname = Text(self.pget_pname())
-            self.w_status = Text('')
-            self.w_mem = Text('')
+            self.w_pid = Text(str(pid), align='center')
+            self.w_name = Text(p.username(), align='center')
+            self.w_pname = Text(self.pget_pname(), align='center')
+            self.w_status = Text('', align='center')
+            self.w_mem = Text('', align='center')
             self.w_cpu = Text('', align='center')
             self.w_uptime = Text('', align='center')
             self.update()
 
         v = [
             Columns([
-                ('fixed', 14, self.w_status),
-                ('fixed', 6, self.w_pid),
-                self.w_name,
-                ('fixed', 8, self.w_cpu),
-                ('fixed', 5, self.w_mem),
-                ('fixed', 10, self.w_uptime),
-                self.w_pname
+                ('fixed', w[0], self.w_status),
+                ('fixed', w[1], self.w_pid),
+                ('fixed', w[2], self.w_name),
+                ('fixed', w[3], self.w_cpu),
+                ('fixed', w[4], self.w_mem),
+                ('fixed', w[5], self.w_uptime),
+                ('fixed', w[6], self.w_pname)
             ])
         ]
         b = Button('')
