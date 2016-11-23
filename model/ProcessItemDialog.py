@@ -85,7 +85,7 @@ class PopUpDialog(WidgetWrap):
             """ Show Error Dialog """
             item.set_errored(True)
             item.set_label(str(e))
-
+q
 
 
 
