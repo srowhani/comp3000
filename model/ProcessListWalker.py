@@ -1,15 +1,20 @@
 import os
 
 from Process import Process
-
-from urwid import ListBox, SimpleFocusListWalker, MainLoop, ExitMainLoop, connect_signal
+from Palette import palette
+from urwid import (
+    ListBox,
+    SimpleFocusListWalker,
+    MainLoop,
+    ExitMainLoop
+)
 
 PROC_DIR = '/proc'
 
 class ProcessListWalker(SimpleFocusListWalker):
     process_dict = {} # check if process already exists in O(1)
     process_list = []
-    
+
     at_top = True
     sort_var = 'cpu_perc'
     asc=True
@@ -20,7 +25,6 @@ class ProcessListWalker(SimpleFocusListWalker):
         """
         super(ProcessListWalker, self).__init__(self.process_list)
         self.update()
-        print self.focus
     def update (self):
         """
             @method update
@@ -33,13 +37,12 @@ class ProcessListWalker(SimpleFocusListWalker):
             if pid in self.process_dict: # it already exists
                 self.process_dict[pid].update()
             else:
-                p = Process(pid, self.item_focus)
+                p = Process(pid, self.item_focus, self.item_remove)
                 self.process_dict[pid] = p
                 self.append(p)
         self.sort(key = lambda x: getattr(x, self.sort_var), reverse=self.asc)
         if self.at_top:
             self.set_focus(0)
-        # print self.focus
     def item_focus (self, obj):
         """
             @method item_focus
@@ -59,7 +62,8 @@ class ProcessListWalker(SimpleFocusListWalker):
             self.at_top = self.focus is 0
         elif key is 'down':
             self.at_top = False
-
+    def item_remove(self, o):
+        self.remove(o)
 """
     Testing
 """
@@ -73,7 +77,7 @@ if __name__ == '__main__':
         pl.update()
         loop.set_alarm_in(1, refresh)
 
-    main_loop = MainLoop(lb, unhandled_input=exit)
+    main_loop = MainLoop(lb, palette=palette, pop_ups=True, unhandled_input=exit)
     main_loop.set_alarm_in(1, refresh)
 
     main_loop.run()

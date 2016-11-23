@@ -1,4 +1,3 @@
-
 palette = [
 	('header', 'white', 'dark red', 'bold'),
 	('progress', 'white', 'light blue', 'bold'),
