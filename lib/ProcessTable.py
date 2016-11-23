@@ -16,23 +16,49 @@ from urwid import (
     connect_signal,
     ExitMainLoop
 )
+class HeaderButton(Button):
+    def __init__ (self, label, key, handle_click):
+        self.key = key
+        self.original_label = label
+        self.desc = False
+        self.cb = handle_click
+        connect_signal(self, 'click', handle_click)
+        super(HeaderButton, self).__init__(label)
+
+        self._label.align = 'center'
+
+    def activate (self):
+        return (self.key, self.set_order(not self.desc))
+    def set_order (self, s):
+        self.desc = s
+        if self.desc:
+            self.set_label(self.original_label + " [v]")
+        else:
+            self.set_label(self.original_label + " [^]")
+        return self.desc
+    def revert (self):
+        self.set_label(self.original_label)
 
 class ProcessTable(AttrMap):
-    def __init__ (self, num_rows=20, w=(12, 8, 15, 12, 12, 12, 15)):
+    def __init__ (self, num_rows=20, w=(14, 14, 18, 16, 16, 16, 20)):
         """
             @method __init__
             Initializes the widget
         """
         self.m_process_list = ProcessList(w)
+        self.prev_sort_item = None
 
-        self.w_status = Button('Status')
-        self.w_pid = Button('PID')
-        self.w_name = Button('Name')
-        self.w_cpu = Button('CPU % V')
-        self.w_mem = Button('MEM %')
-        self.w_up = Button('Uptime')
-        self.w_pname = Button('Process')
+        self.w_status = HeaderButton('Status', 'status', self.handle_click)
+        self.w_pid = HeaderButton('PID', 'pid', self.handle_click)
+        self.w_name = HeaderButton('Name', 'name', self.handle_click)
+        self.w_cpu = HeaderButton('CPU %', 'cpu_perc', self.handle_click)
+        self.w_mem = HeaderButton('MEM %', 'mem_perc', self.handle_click)
+        self.w_up = HeaderButton('Uptime', 'uptime', self.handle_click)
+        self.w_pname = HeaderButton('Process', 'pname', self.handle_click)
 
+        self.w_cpu.activate()
+        self.prev_sort_item = self.w_cpu
+        
         self.header_buttons = h = [
             self.w_status,
             self.w_pid,
@@ -42,9 +68,6 @@ class ProcessTable(AttrMap):
             self.w_up,
             self.w_pname
         ]
-
-        for button in self.header_buttons:
-            button._label.align = 'center'
 
         m_header = AttrMap(
             Columns(
@@ -58,7 +81,12 @@ class ProcessTable(AttrMap):
         ]))
         super(ProcessTable, self).__init__(m_lb, None)
         self.update()
-
+    def handle_click (self, item):
+        if self.prev_sort_item:
+            self.prev_sort_item.revert()
+        key, order = item.activate()
+        self.m_process_list.set_sort(key, order)
+        self.prev_sort_item = item
     def update (self):
         """
             @method update

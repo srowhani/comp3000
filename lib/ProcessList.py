@@ -26,7 +26,9 @@ class ProcessList(ListBox):
             update call to all child components
         """
         self.m_walker.update()
-
+    def set_sort (self, *args):
+        self.m_walker.set_sort(*args)
+        self.update()
 """
     Testing
 """
