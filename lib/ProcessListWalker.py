@@ -65,6 +65,9 @@ class ProcessListWalker(SimpleFocusListWalker):
             self.at_top = False
     def item_remove(self, o):
         self.remove(o)
+    def set_sort(self, s='cpu_perc', asc=True):
+        self.sort_var = s
+        self.asc = asc
 """
     Testing
 """
