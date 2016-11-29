@@ -2,7 +2,7 @@
 from urwid import (Padding, Filler, LineBox, AttrMap, Button, 
 	Pile, Columns, Frame, Text, ListBox, ExitMainLoop, MainLoop)
 from CPUMeter import CPUMeter
-from MemMeter import MemMeter
+from MemoryMeter import MemoryMeter
 from SwapMeter import SwapMeter
 from Footer import Footer
 from Palette import *
@@ -23,7 +23,7 @@ class CPUList(ListBox):
 		"""
 		self.stat = self.readStat()
 		self.cpu_meter = CPUMeter()
-		self.mem_meter = MemMeter()
+		self.mem_meter = MemoryMeter()
 		self.swap_meter = SwapMeter()
 		self.Columns()
 		super(CPUList, self).__init__(self.cpu_columns)
@@ -37,14 +37,14 @@ class CPUList(ListBox):
 
 		for i in range(len(self.cpu_text)):
 			self.cpu_columns[i] = Columns([
-				('fixed',  6, Text("%"+self.cpu_text[i+1], align='left')),
+				('fixed',  7, Text("%"+self.cpu_text[i+1]+":", align='left')),
 				('fixed', 12, Text("")),
 				('fixed',  2, Text(" [")),
 				('weight', 1, self.cpu_meter[i]),
 				('fixed',  2, Text("] ")),
 				])
 		self.cpu_columns[len(self.cpu_columns)] = Columns([
-			('fixed',  6, Text("Mem:")),
+			('fixed',  7, Text("Mem:")),
 			('fixed',  5, self.m_perc),
 			('fixed',  1, Text("/")),
 			('fixed',  7, self.m_total),
@@ -53,7 +53,7 @@ class CPUList(ListBox):
 			('fixed',  2, Text("] ")),
 			])
 		self.cpu_columns[len(self.cpu_columns)] = Columns([
-			('fixed',  6, Text("Swap:")),
+			('fixed',  7, Text("Swap:")),
 			('fixed',  5, self.s_perc),
 			('fixed',  1, Text("/")),
 			('fixed',  7, self.s_total),

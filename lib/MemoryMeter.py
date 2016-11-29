@@ -4,7 +4,7 @@ from urwid import (Frame, Button, connect_signal, ProgressBar,
 from Footer import Footer
 from Palette import *
 
-class MemMeter(ProgressBar):
+class MemoryMeter(ProgressBar):
 
 	def __init__(self):
 		"""
@@ -15,7 +15,7 @@ class MemMeter(ProgressBar):
 		self.buffers = 0
 		self.cached = 0
 		self.perc = 0
-		super(MemMeter, self).__init__('body', 'progress', 0, 100, satt=None)
+		super(MemoryMeter, self).__init__('body', 'progress', 0, 100, satt=None)
 		self.update()
 
 	def getTotal(self):
@@ -66,7 +66,7 @@ class MemMeter(ProgressBar):
 
 # Testing
 if __name__ == '__main__':
-	mm = MemMeter()
+	mm = MemoryMeter()
 	frame = Frame(ListBox(SimpleListWalker([mm])), header=None, footer=Footer())
 
 	def exit(key):

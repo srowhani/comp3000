@@ -26,7 +26,6 @@ class SwapMeter(ProgressBar):
 			Calculates mem percentage
 		"""
 		mem = self.readMemInfo()
-		
 		# Cygwind doesn't have buffers or cached
 		# and vitual box has different locations
 		# so additional checks are required
