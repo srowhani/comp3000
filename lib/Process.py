@@ -69,9 +69,12 @@ class Process (AttrMap):
         self.cb_remove = cb_remove
 
         if self.stats is not None:
+            self.name = p.username()
+            self.pname = self.pget_pname()
+
             self.w_pid = Text(str(pid), align='center')
-            self.w_name = Text(p.username(), align='center')
-            self.w_pname = Text(self.pget_pname(), align='center')
+            self.w_name = Text(self.name, align='center')
+            self.w_pname = Text(self.pname, align='center')
             self.w_status = Text('', align='center')
             self.w_mem = Text('', align='center')
             self.w_cpu = Text('', align='center')
@@ -147,10 +150,13 @@ class Process (AttrMap):
             return
         p = self.process
         self.cpu_perc = self.pget_cpu()
+        self.status = self.pget_status()
+        self.uptime = self.pgetf_uptime()
+        self.mem_perc = p.memory_percent()
 
-        self.w_status.set_text(self.pget_status())
-        self.w_uptime.set_text(self.pgetf_uptime())
-        self.w_mem.set_text("%.1f" % p.memory_percent())
+        self.w_status.set_text(self.status)
+        self.w_uptime.set_text(self.uptime)
+        self.w_mem.set_text("%.1f" % self.mem_perc)
         self.w_cpu.set_text('%.1f' % self.cpu_perc)
 
     def read_stat (self):
