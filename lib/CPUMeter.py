@@ -1,6 +1,7 @@
 
 import time
-from urwid import Frame, Button, connect_signal, ProgressBar, AttrMap, ExitMainLoop, MainLoop, ListBox, SimpleListWalker
+from urwid import (Frame, Button, Columns, Text, ProgressBar, 
+	AttrMap, ExitMainLoop, MainLoop, ListBox, SimpleListWalker)
 from Footer import Footer
 from Palette import *
 
@@ -12,8 +13,7 @@ class CPUMeter(SimpleListWalker):
 		"""
 			Initializes the widget
 		"""
-		self.c1 = self.readStat()
-		self.c2 = self.readStat()
+		self.stat = self.readStat()
 		super(CPUMeter, self).__init__(self)
 		self.update()
 
@@ -21,28 +21,36 @@ class CPUMeter(SimpleListWalker):
 		"""
 			Calculates cpu percentage
 		"""
-		c1 = self.c2
-		c2 = self.readStat()
+		old = self.stat
+		new = self.readStat()
 
 		# Starts at 1 to skip first cpu (total cpu)
-		for i in range(1,len(c1)):
-			if 'cpu' in c1[i][0]:
-				try:
-					perc = (int(c1[i][1])+int(c1[i][2])+int(c1[i][3])-                     \
-								  int(c2[i][1])-int(c2[i][2])-int(c2[i][3]))/                    \
-								 (int(c1[i][1])+int(c1[i][2])+int(c1[i][3])+int(c1[i][4])-       \
-									int(c2[i][1])-int(c2[i][2])-int(c2[i][3])-int(c2[i][4])*1.0)*100
-				except ZeroDivisionError:
-					perc = 0
-				if perc < 0: perc = 0
-				if perc > 100: perc = 100
+		for i in range(1,len(self.stat)):
+			if 'cpu' in old[i][0]:
+				perc = self.calcPerc(i, old, new)
 				if i in self.cpu_meter:
 					self.cpu_meter[i] = perc
 					self[i-1].set_completion(self.cpu_meter[i])
 				else:
 					self.cpu_meter[i] = perc
-					self.append(ProgressBar('body', 'progress', self.cpu_meter[i], 100))	
-		self.c2 = self.readStat()
+					self.append(ProgressBar('body', 'progress', self.cpu_meter[i], 100, None))
+					
+		self.stat = self.readStat()
+
+	def calcPerc(self, i, a, b):
+		"""
+			Calculates the total cpu percentage
+		"""
+		try:
+		  p = (int(a[i][1])+int(a[i][2])+int(a[i][3])-                    \
+					 int(b[i][1])-int(b[i][2])-int(b[i][3]))/                   \
+					(int(a[i][1])+int(a[i][2])+int(a[i][3])+int(a[i][4])-       \
+					 int(b[i][1])-int(b[i][2])-int(b[i][3])-int(b[i][4])*1.0)*100
+		except ZeroDivisionError:
+			p = 0
+		if p < 0: p = 0
+		if p > 100: p = 100
+		return p
 
 	def readStat(self):
 		"""
@@ -61,8 +69,8 @@ if __name__ == '__main__':
 
 	def refresh(loop, data):
 		cm.update()
-		loop.set_alarm_in(0.5, refresh)
+		loop.set_alarm_in(1, refresh)
 
 	main_loop = MainLoop(frame, palette, unhandled_input=exit, pop_ups=True)
-	main_loop.set_alarm_in(0.5, refresh)
+	main_loop.set_alarm_in(1, refresh)
 	main_loop.run()

@@ -1,6 +1,8 @@
 
-from urwid import Padding, Filler, LineBox, AttrMap, Button, Pile, Columns, Frame, Text, ListBox, ExitMainLoop, MainLoop
+from urwid import (Padding, Filler, LineBox, AttrMap, Button, 
+	Pile, Columns, Frame, Text, ListBox, ExitMainLoop, MainLoop)
 from CPUMeter import CPUMeter
+from MemMeter import MemMeter
 from Footer import Footer
 from Palette import *
 
@@ -13,13 +15,14 @@ class CPUList(ListBox):
 		"""
 			Initializes the widgets
 		"""
-		self.stat = self.getStat()
+		self.stat = self.readStat()
 		self.cpu_meter = CPUMeter()
-		self.CpuColumns()
+		self.mem_meter = MemMeter()
+		self.Columns()
 		super(CPUList, self).__init__(self.cpu_columns)
 		self.update()
 
-	def CpuColumns(self):
+	def Columns(self):
 		# Starts at 1 to skip first cpu (total cpu)
 		for i in range(1,len(self.stat)):
 			if 'cpu' in self.stat[i][0]:
@@ -27,28 +30,37 @@ class CPUList(ListBox):
 
 		for i in range(len(self.cpu_text)):
 			self.cpu_columns[i] = Columns([
-				('fixed',  5, Text("%"+self.cpu_text[i+1], align='left')),
-				('fixed',  3, Text(" [", align='right')),
+				('fixed',  6, Text("%"+self.cpu_text[i+1], align='left')),
+				('fixed',  2, Text(" [")),
 				('weight', 1, self.cpu_meter[i]),
-				('fixed',  3, Text("] ", align='left')),
+				('fixed',  2, Text("] ")),
 				])
+		self.cpu_columns[len(self.cpu_columns)] = Columns([
+			('fixed',  6, Text("Mem:")),
+			('fixed',  2, Text(" [")),
+			('weight', 1, self.mem_meter),
+			('fixed',  2, Text("] ")),
+			])
 
 	def update(self):
 		"""
-			Updates child component
+			Updates child components
 		"""
+		self.mem_meter.update()
 		self.cpu_meter.update()
 
-	def getStat(self):
+	def readStat(self):
+		"""
+			Returns list of CPU info
+		"""
 		return [i.split() for i in [line.strip() for line in open('/proc/stat')]]
 
 # Testing
 if __name__ == '__main__':
 	cpu_lb = CPUList()
-	lb = Padding(cpu_lb, left=2, right=2)
+	lb = cpu_lb
 
-	footer = Footer()
-	frame = Frame(lb, footer=footer)
+	frame = Frame(lb, header=None, footer=Footer())
 
 	def keyPress(key):
 		if key in ('q', 'Q'):
