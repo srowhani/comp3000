@@ -36,7 +36,11 @@ class HelpWindow(WidgetWrap):
   help_text = [
     "Help Window\n\n",
     "Press 'q' or 'Q' to quit.\n",
-    "Click on a process for options.\n",
+    "Click on a process for options.\n\n",
+    "Mem/Swap:  a/b [ c ].\n",
+    "  a: percentage used.\n",
+    "  b: total available (GB).\n",
+    "  c: visual graph of a.\n",
     ]
   def __init__(self):
     """

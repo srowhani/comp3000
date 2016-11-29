@@ -1,5 +1,4 @@
 
-import time
 from urwid import (Frame, Button, Columns, Text, ProgressBar, 
 	AttrMap, ExitMainLoop, MainLoop, ListBox, SimpleListWalker)
 from Footer import Footer

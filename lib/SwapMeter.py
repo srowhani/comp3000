@@ -4,7 +4,7 @@ from urwid import (Frame, Button, connect_signal, ProgressBar,
 from Footer import Footer
 from Palette import *
 
-class MemMeter(ProgressBar):
+class SwapMeter(ProgressBar):
 
 	def __init__(self):
 		"""
@@ -12,10 +12,8 @@ class MemMeter(ProgressBar):
 		"""
 		self.total = 0
 		self.free = 0
-		self.buffers = 0
-		self.cached = 0
 		self.perc = 0
-		super(MemMeter, self).__init__('body', 'progress', 0, 100, satt=None)
+		super(SwapMeter, self).__init__('body', 'progress', 0, 100, satt=None)
 		self.update()
 
 	def getTotal(self):
@@ -33,17 +31,13 @@ class MemMeter(ProgressBar):
 		# and vitual box has different locations
 		# so additional checks are required
 		for i in range(len(mem)):
-			if "MemTotal:" == mem[i][0]:
+			if "SwapTotal:" == mem[i][0]:
 				self.total = self.toGB(int(mem[i][1]))
-			if "MemFree:" == mem[i][0]:
+			if "SwapFree:" == mem[i][0]:
 				self.free = self.toGB(int(mem[i][1]))
-			if "Buffers:" == mem[i][0]:
-				self.buffers = self.toGB(int(mem[i][1]))
-			if "Cached:" == mem[i][0]:
-				self.cached = self.toGB(int(mem[i][1]))
 
 		try:
-			p = 100 - (self.free+self.buffers+self.cached)/(self.total*1.0)*100
+			p = 100 - self.free/(self.total*1.0)*100
 		except ZeroDivisionError:
 			p = 0
 		if p < 0: p = 0
@@ -66,15 +60,15 @@ class MemMeter(ProgressBar):
 
 # Testing
 if __name__ == '__main__':
-	mm = MemMeter()
-	frame = Frame(ListBox(SimpleListWalker([mm])), header=None, footer=Footer())
+	sm = SwapMeter()
+	frame = Frame(ListBox(SimpleListWalker([sm])), header=None, footer=Footer())
 
 	def exit(key):
 		if key in ('q', 'Q'):
 			raise ExitMainLoop()
 
 	def refresh(loop, data):
-		mm.update()
+		sm.update()
 		loop.set_alarm_in(1, refresh)
 
 	main_loop = MainLoop(frame, palette, unhandled_input=exit, pop_ups=True)
