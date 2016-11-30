@@ -4,15 +4,16 @@ from urwid import (AttrMap, Text, ExitMainLoop, Filler, AttrWrap,
 	PopUpLauncher, WidgetWrap, ListBox, SimpleListWalker)
 from Palette import *
 
+# reference https://github.com/urwid/urwid/blob/master/examples/pop_up.py
 class HelpButton(PopUpLauncher):
   def __init__(self):
     """
       Initializes the widget
     """
-    self.btn = Button('help')
-    connect_signal(self.btn, 'click',
+    btn = Button('help')
+    connect_signal(btn, 'click',
       lambda button: self.open_pop_up())
-    super(HelpButton, self).__init__(self.btn)
+    super(HelpButton, self).__init__(btn)
 
   def create_pop_up(self):
     """
@@ -35,7 +36,11 @@ class HelpWindow(WidgetWrap):
   help_text = [
     "Help Window\n\n",
     "Press 'q' or 'Q' to quit.\n",
-    "Click on a process for options.\n",
+    "Click on a process for options.\n\n",
+    "Mem/Swap:  a/b [ c ].\n",
+    "  a: percentage used.\n",
+    "  b: total available (GB).\n",
+    "  c: visual graph of a.\n",
     ]
   def __init__(self):
     """
@@ -69,9 +74,8 @@ class Footer(AttrMap):
 
 # Testing
 if __name__ == '__main__':
-  foot = Footer()
   lb = ListBox([Text("Test")])
-  view = Frame(lb, header=None, footer=foot)
+  view = Frame(lb, header=None, footer=Footer())
 
   def exit(key):
     if key in ('q', 'Q'):
