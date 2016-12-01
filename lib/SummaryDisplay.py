@@ -27,9 +27,6 @@ class SummaryDisplay(ListBox):
 		self.cpu_meters = CPUMeterListWalker()
 		self.mem_meter = MemoryMeter()
 		self.swap_meter = SwapMeter()
-		for i in range(len(self.cpu_meters)):
-			self.cpu_niced.append(Text("", align='right'))
-			self.cpu_system.append(Text("", align='left'))
 		super(SummaryDisplay, self).__init__(self.cpu_columns)
 		self.columns()
 		self.update()
@@ -59,6 +56,10 @@ class SummaryDisplay(ListBox):
 		for i in range(1,len(self.stat)):
 			if 'cpu' in self.stat[i][0]:
 				self.cpu_text[i] = self.stat[i][0]
+
+		for i in range(len(self.cpu_meters)):
+			self.cpu_niced.append(Text("", align='right'))
+			self.cpu_system.append(Text("", align='left'))
 
 		for i in range(len(self.cpu_text)):
 			self.cpu_columns[i] = Columns([
