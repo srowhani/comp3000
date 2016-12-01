@@ -7,7 +7,7 @@ from SwapMeter import SwapMeter
 from Footer import Footer
 from Palette import *
 
-class SummaryDisplay(ListBox):
+class ResourceManager(ListBox):
 	# Internals 
 	cpu_text = {}
 	cpu_columns = {}
@@ -27,7 +27,7 @@ class SummaryDisplay(ListBox):
 		self.cpu_meters = CPUMeterListWalker()
 		self.mem_meter = MemoryMeter()
 		self.swap_meter = SwapMeter()
-		super(SummaryDisplay, self).__init__(self.cpu_columns)
+		super(ResourceManager, self).__init__(self.cpu_columns)
 		self.columns()
 		self.update()
 
@@ -98,7 +98,7 @@ class SummaryDisplay(ListBox):
 
 # Testing
 if __name__ == '__main__':
-	sd = SummaryDisplay()
+	sd = ResourceManager()
 	lb = sd
 
 	frame = Frame(lb, header=None, footer=Footer())
