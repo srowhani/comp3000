@@ -6,6 +6,7 @@ from Palette import *
 
 # reference https://github.com/urwid/urwid/blob/master/examples/pop_up.py
 class HelpButton(PopUpLauncher):
+
   def __init__(self):
     """
       Initializes the widget
@@ -28,7 +29,7 @@ class HelpButton(PopUpLauncher):
     """
       Called each time the widget is rendered
     """
-    return {'left':0, 'top':-15, 'overlay_width':30, 'overlay_height':15}
+    return {'left':0, 'top':-15, 'overlay_width':50, 'overlay_height':20}
 
 class HelpWindow(WidgetWrap):
   # Constants
@@ -37,11 +38,16 @@ class HelpWindow(WidgetWrap):
     "Help Window\n\n",
     "Press 'q' or 'Q' to quit.\n",
     "Click on a process for options.\n\n",
-    "Mem/Swap:  a/b [ c ].\n",
-    "  a: percentage used.\n",
-    "  b: total available (GB).\n",
-    "  c: visual graph of a.\n",
+    "Mem/Swap:  a / b [ c ].\n",
+    " a: total used in gigabytes.\n",
+    " b: total available in gigabytes.\n",
+    " c: visual graph of a.\n\n",
+    "%cpu(s)  a / b [ c ].\n",
+    " a: combined un-niced and niced percentage.\n",
+    " b: system percentage.\n",
+    " c: total percentage.\n",
     ]
+
   def __init__(self):
     """
       Initializes the widget
@@ -61,6 +67,7 @@ class Footer(AttrMap):
     " ",
     ("key", "q"), " quit ",
     ]
+
   def __init__(self):
     """
     	Initializes the widget

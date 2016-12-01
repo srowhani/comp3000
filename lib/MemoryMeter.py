@@ -15,13 +15,8 @@ class MemoryMeter(ProgressBar):
 		self.buffers = 0
 		self.cached = 0
 		self.perc = 0
-		super(MemoryMeter, self).__init__('body', 'progress', 0, 100, satt=None)
+		super(MemoryMeter, self).__init__('body', 'progress', self.perc, 100, satt=None)
 		self.update()
-
-	def getTotal(self):
-		return '{:3.3f}'.format(self.total)
-	def getPerc(self):
-		return '{:3.1f}'.format(self.perc)
 
 	def update(self):
 		"""
@@ -29,9 +24,7 @@ class MemoryMeter(ProgressBar):
 		"""
 		mem = self.readMemInfo()
 		
-		# Cygwind doesn't have buffers or cached
-		# and vitual box has different locations
-		# so additional checks are required
+		# Different index based on Linux version
 		for i in range(len(mem)):
 			if "MemTotal:" == mem[i][0]:
 				self.total = self.toGB(int(mem[i][1]))
@@ -49,8 +42,20 @@ class MemoryMeter(ProgressBar):
 		if p < 0: p = 0
 		if p > 100: p = 100
 		self.perc = p
-
 		self.set_completion(self.perc)
+
+	def getTotal(self):
+		return '{:3.3f}'.format(self.total)
+	def getFree(self):
+		return '{:3.3f}'.format(self.total - self.free+self.buffers+self.cached)
+
+	def get_text(self):
+		"""
+			@Override urwid.ProgressBar.get_text()
+			Returns the progress bar percentage text
+		"""
+		percent = min(100, max(0, float(self.current * 100 / self.done)))
+		return '{:3.1f}'.format(percent) + " %"
 
 	def toGB(self, num):
 		"""
