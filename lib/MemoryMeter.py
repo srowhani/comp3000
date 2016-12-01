@@ -46,7 +46,7 @@ class MemoryMeter(ProgressBar):
 
 	def getTotal(self):
 		return '{:3.3f}'.format(self.total)
-	def getFree(self):
+	def getUsed(self):
 		return '{:3.3f}'.format(self.total - self.free+self.buffers+self.cached)
 
 	def get_text(self):

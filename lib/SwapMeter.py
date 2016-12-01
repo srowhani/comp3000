@@ -40,7 +40,7 @@ class SwapMeter(ProgressBar):
 
 	def getTotal(self):
 		return '{:3.3f}'.format(self.total)
-	def getFree(self):
+	def getUsed(self):
 		return '{:3.3f}'.format(self.total - self.free)
 
 	def get_text(self):

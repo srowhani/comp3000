@@ -14,9 +14,9 @@ class SummaryDisplay(ListBox):
 	cpu_niced = []
 	cpu_system = []
 
-	m_perc  = Text("", align='right')
+	m_used  = Text("", align='right')
 	m_total = Text("", align='left')
-	s_perc  = Text("", align='right')
+	s_used  = Text("", align='right')
 	s_total = Text("", align='left')
 
 	def __init__(self):
@@ -41,11 +41,11 @@ class SummaryDisplay(ListBox):
 			self.cpu_system[i].set_text(self.cpu_meters[i].getSystem())
 
 		self.swap_meter.update()
-		self.s_perc.set_text(self.swap_meter.getFree())
+		self.s_used.set_text(self.swap_meter.getUsed())
 		self.s_total.set_text(self.swap_meter.getTotal())
 
 		self.mem_meter.update()
-		self.m_perc.set_text(self.mem_meter.getFree())
+		self.m_used.set_text(self.mem_meter.getUsed())
 		self.m_total.set_text(self.mem_meter.getTotal())
 
 	def columns(self):
@@ -73,7 +73,7 @@ class SummaryDisplay(ListBox):
 				])
 		self.cpu_columns[len(self.cpu_columns)] = Columns([
 			('fixed',  7, Text("Mem  :")),
-			('fixed',  7, self.m_perc),
+			('fixed',  7, self.m_used),
 			('fixed',  3, Text(" / ")),
 			('fixed',  7, self.m_total),
 			('fixed',  2, Text(" [")),
@@ -82,7 +82,7 @@ class SummaryDisplay(ListBox):
 			])
 		self.cpu_columns[len(self.cpu_columns)] = Columns([
 			('fixed',  7, Text("Swap :")),
-			('fixed',  7, self.s_perc),
+			('fixed',  7, self.s_used),
 			('fixed',  3, Text(" / ")),
 			('fixed',  7, self.s_total),
 			('fixed',  2, Text(" [")),
