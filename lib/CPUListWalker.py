@@ -5,7 +5,7 @@ from CPUMeter import CPUMeter
 from Footer import Footer
 from Palette import *
 
-class CPUMeterListWalker(SimpleListWalker):
+class CPUListWalker(SimpleListWalker):
 	# Internals
 	cpu_meter = {}
 
@@ -14,7 +14,7 @@ class CPUMeterListWalker(SimpleListWalker):
 			Initializes the widget
 		"""
 		self.stat = self.readStat()
-		super(CPUMeterListWalker, self).__init__(self)
+		super(CPUListWalker, self).__init__(self)
 		self.update()
 
 	def update(self):
@@ -38,7 +38,7 @@ class CPUMeterListWalker(SimpleListWalker):
 
 # Testing
 if __name__ == '__main__':
-	cm = CPUMeterListWalker()
+	cm = CPUListWalker()
 	frame = Frame(ListBox(cm), header=None, footer=Footer())
 
 	def exit(key):

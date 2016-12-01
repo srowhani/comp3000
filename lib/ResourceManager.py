@@ -1,7 +1,7 @@
 
 from urwid import (Padding, Filler, LineBox, AttrMap, Button, 
 	Pile, Columns, Frame, Text, ListBox, ExitMainLoop, MainLoop)
-from CPUMeterListWalker import CPUMeterListWalker
+from CPUListWalker import CPUListWalker
 from MemoryMeter import MemoryMeter
 from SwapMeter import SwapMeter
 from Footer import Footer
@@ -24,7 +24,7 @@ class ResourceManager(ListBox):
 			Initializes the widgets
 		"""
 		self.stat = self.readStat()
-		self.cpu_meters = CPUMeterListWalker()
+		self.cpu_meters = CPUListWalker()
 		self.mem_meter = MemoryMeter()
 		self.swap_meter = SwapMeter()
 		super(ResourceManager, self).__init__(self.cpu_columns)
