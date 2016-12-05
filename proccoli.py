@@ -36,7 +36,7 @@ def main():
 		loop.set_alarm_in(2, refresh)
 
 	mainloop = MainLoop(frame, palette, pop_ups=True, unhandled_input=exit)
-        mainloop.set_alarm_in(0, refresh)
+	mainloop.set_alarm_in(0, refresh)
 	mainloop.run()
 
 if __name__=='__main__':
