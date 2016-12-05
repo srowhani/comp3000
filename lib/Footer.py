@@ -1,9 +1,21 @@
-
-from urwid import (AttrMap, Text, ExitMainLoop, Filler, AttrWrap,
-	Button, connect_signal, MainLoop, Frame, Pile, Padding, Columns,
-	PopUpLauncher, WidgetWrap, ListBox, SimpleListWalker)
 from Palette import *
-
+from urwid import (
+    AttrMap, 
+    AttrWrap, 
+    Button, 
+    Columns, 
+    connect_signal, 
+    ExitMainLoop, 
+    Filler, 
+    Frame, 
+    ListBox, 
+    MainLoop, 
+    Padding, 
+    Pile, 
+    PopUpLauncher, 
+    Text, 
+    WidgetWrap
+)
 # reference https://github.com/urwid/urwid/blob/master/examples/pop_up.py
 class HelpButton(PopUpLauncher):
 
@@ -70,7 +82,7 @@ class Footer(AttrMap):
 
   def __init__(self):
     """
-    	Initializes the widget
+        Initializes the widget
     """
     self.footer_btn = HelpButton()
     self.footer = Columns([
