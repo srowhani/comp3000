@@ -41,11 +41,11 @@ class HelpWindow(WidgetWrap):
     "Mem/Swap:  a / b [ c ].\n",
     " a: total used in gigabytes.\n",
     " b: total available in gigabytes.\n",
-    " c: visual graph of a.\n\n",
+    " c: visual graph of total used.\n\n",
     "%cpu(s)  a / b [ c ].\n",
     " a: combined un-niced and niced percentage.\n",
     " b: system percentage.\n",
-    " c: total percentage.\n",
+    " c: visual graph of total percentage.\n",
     ]
 
   def __init__(self):

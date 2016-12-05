@@ -30,13 +30,9 @@ class MemoryMeter(ProgressBar):
 				self.total = self.toGB(int(mem[i][1]))
 			if "MemFree:" == mem[i][0]:
 				self.free = self.toGB(int(mem[i][1]))
-			if "Buffers:" == mem[i][0]:
-				self.buffers = self.toGB(int(mem[i][1]))
-			if "Cached:" == mem[i][0]:
-				self.cached = self.toGB(int(mem[i][1]))
 
 		try:
-			p = 100 - (self.free+self.buffers+self.cached)/(self.total*1.0)*100
+			p = 100 - self.free/(self.total*1.0)*100
 		except ZeroDivisionError:
 			p = 0
 		if p < 0: p = 0
@@ -47,7 +43,7 @@ class MemoryMeter(ProgressBar):
 	def getTotal(self):
 		return '{:3.3f}'.format(self.total)
 	def getUsed(self):
-		return '{:3.3f}'.format(self.total - self.free+self.buffers+self.cached)
+		return '{:3.3f}'.format(self.total - self.free)
 
 	def get_text(self):
 		"""
