@@ -44,9 +44,9 @@ class CPUMeter(ProgressBar):
         """
         try:
           p = (int(a[i][1])+int(a[i][2])+int(a[i][3])-                    \
-                     int(b[i][1])-int(b[i][2])-int(b[i][3]))/                   \
-                    (int(a[i][1])+int(a[i][2])+int(a[i][3])+int(a[i][4])-       \
-                     int(b[i][1])-int(b[i][2])-int(b[i][3])-int(b[i][4])*1.0)*100
+               int(b[i][1])-int(b[i][2])-int(b[i][3]))/                   \
+              (int(a[i][1])+int(a[i][2])+int(a[i][3])+int(a[i][4])-       \
+               int(b[i][1])-int(b[i][2])-int(b[i][3])-int(b[i][4])*1.0)*100
         except ZeroDivisionError:
             p = 0
         if p < 0: p = 0
@@ -59,9 +59,9 @@ class CPUMeter(ProgressBar):
         """
         try:
           p = (int(a[i][1])+int(a[i][2])-                    \
-                     int(b[i][1])-int(b[i][2]))/                   \
-                    (int(a[i][1])+int(a[i][2])+int(a[i][4])-       \
-                     int(b[i][1])-int(b[i][2])-int(b[i][4])*1.0)*100
+               int(b[i][1])-int(b[i][2]))/                   \
+              (int(a[i][1])+int(a[i][2])+int(a[i][4])-       \
+               int(b[i][1])-int(b[i][2])-int(b[i][4])*1.0)*100
         except ZeroDivisionError:
             p = 0
         if p < 0: p = 0
@@ -74,9 +74,9 @@ class CPUMeter(ProgressBar):
         """
         try:
           p = (int(a[i][3])-                    \
-                     int(b[i][3]))/                   \
-                    (int(a[i][3])+int(a[i][4])-       \
-                     int(b[i][3])-int(b[i][4])*1.0)*100
+               int(b[i][3]))/                   \
+              (int(a[i][3])+int(a[i][4])-       \
+               int(b[i][3])-int(b[i][4])*1.0)*100
         except ZeroDivisionError:
             p = 0
         if p < 0: p = 0
