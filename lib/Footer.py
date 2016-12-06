@@ -50,14 +50,14 @@ class HelpWindow(WidgetWrap):
     "Help Window\n\n",
     "Press 'q' or 'Q' to quit.\n",
     "Click on a process for options.\n\n",
-    "Mem/Swap:  a / b [ c ].\n",
-    " a: total used in gigabytes.\n",
-    " b: total available in gigabytes.\n",
-    " c: visual graph of total used.\n\n",
     "%cpu(s)  a / b [ c ].\n",
     " a: combined un-niced and niced percentage.\n",
     " b: system percentage.\n",
     " c: visual graph of total percentage.\n",
+    "Mem/Swap:  a / b [ c ].\n",
+    " a: total used in gigabytes.\n",
+    " b: total available in gigabytes.\n",
+    " c: visual graph of total used.\n\n",
     ]
 
   def __init__(self):
