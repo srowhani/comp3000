@@ -1,11 +1,11 @@
 from Footer import Footer
 from Palette import *
 from urwid import (
-    ExitMainLoop, 
-    Frame, 
-    ListBox, 
-    MainLoop, 
-    ProgressBar 
+    ExitMainLoop,
+    Frame,
+    ListBox,
+    MainLoop,
+    ProgressBar
 )
 
 class SwapMeter(ProgressBar):
@@ -69,6 +69,8 @@ class SwapMeter(ProgressBar):
 
 # Testing
 if __name__ == '__main__':
+    from sys import argv
+    from timeit import Timer
     sm = SwapMeter()
     frame = Frame(ListBox([sm]), header=None, footer=Footer())
 
@@ -79,7 +81,11 @@ if __name__ == '__main__':
     def refresh(loop, data):
         sm.update()
         loop.set_alarm_in(1, refresh)
-
-    main_loop = MainLoop(frame, palette, unhandled_input=exit, pop_ups=True)
-    main_loop.set_alarm_in(1, refresh)
-    main_loop.run()
+        
+    if argv[1] == 'perf':
+        t = Timer(lambda: sm.update())
+        print 'SwapMeter: ', t.timeit(number=10000)
+    else:
+        main_loop = MainLoop(frame, palette, unhandled_input=exit, pop_ups=True)
+        main_loop.set_alarm_in(1, refresh)
+        main_loop.run()

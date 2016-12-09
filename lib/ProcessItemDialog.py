@@ -58,9 +58,8 @@ class PopUpDialog(WidgetWrap):
         dismiss = Button("Dismiss")
         connect_signal(dismiss, 'click',
             lambda button: self._emit("close"))
-        signal_list = [i for i in signal.__dict__.items() if i[0].startswith('SIG')]
-        signal_list.sort(key = lambda x: x[1])
-        items = [MenuOption(t, self.on_item_select) for t in signal_list]
+        signal_dict = dict((k, v) for v, k in reversed(sorted(signal.__dict__.items())) if v.startswith('SIG') and not v.startswith('SIG_'))
+        items = [MenuOption((signal_dict[t], t), self.on_item_select) for t in signal_dict]
         items = Pile(items)
         title = proc
         pile = Pile([

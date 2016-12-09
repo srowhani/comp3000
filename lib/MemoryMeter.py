@@ -1,10 +1,10 @@
 from Footer import Footer
 from Palette import *
 from urwid import (
-    ExitMainLoop, 
-    Frame, 
-    ListBox, 
-    MainLoop, 
+    ExitMainLoop,
+    Frame,
+    ListBox,
+    MainLoop,
     ProgressBar
 )
 class MemoryMeter(ProgressBar):
@@ -24,7 +24,7 @@ class MemoryMeter(ProgressBar):
             Calculates mem percentage
         """
         mem = self.readMemInfo()
-        
+
         # Different index based on Linux version
         for i in range(len(mem)):
             if "MemTotal:" == mem[i][0]:
@@ -68,6 +68,8 @@ class MemoryMeter(ProgressBar):
 
 # Testing
 if __name__ == '__main__':
+    from sys import argv
+    from timeit import Timer
     mm = MemoryMeter()
     frame = Frame(ListBox([mm]), header=None, footer=Footer())
 
@@ -79,6 +81,10 @@ if __name__ == '__main__':
         mm.update()
         loop.set_alarm_in(1, refresh)
 
-    main_loop = MainLoop(frame, palette, unhandled_input=exit, pop_ups=True)
-    main_loop.set_alarm_in(1, refresh)
-    main_loop.run()
+    if argv[1] == 'perf':
+        t = Timer(lambda: mm.update())
+        print 'MemoryMeter: ', t.timeit(number=10000)
+    else:
+        main_loop = MainLoop(frame, palette, unhandled_input=exit, pop_ups=True)
+        main_loop.set_alarm_in(1, refresh)
+        main_loop.run()

@@ -250,6 +250,9 @@ class Process (AttrMap):
     Testing
 """
 if __name__ == '__main__':
+    from sys import argv
+    from timeit import Timer
+
     def exit (p):
         if p is 'q':
             raise ExitMainLoop()
@@ -257,11 +260,15 @@ if __name__ == '__main__':
         p1.update()
         p2.update()
         loop.set_alarm_in(1, refresh)
+
     p1 = Process(1, lambda x: x, lambda: x)
     p2 = Process(os.getpid(), lambda x: x, lambda: x)
+    if argv[1] == 'perf':
+        t = Timer(lambda: p1.update())
+        print 'Process: ', t.timeit(number=10000)
+    else:
+        lb = ListBox(SimpleListWalker([p1, p2]))
 
-    lb = ListBox(SimpleListWalker([p1, p2]))
-
-    m = MainLoop(lb, palette=[('reversed', 'standout', ''), ('popbg', 'white', 'dark blue')], pop_ups=True, unhandled_input=exit)
-    m.set_alarm_in(1, refresh)
-    m.run()
+        m = MainLoop(lb, palette=[('reversed', 'standout', ''), ('popbg', 'white', 'dark blue')], pop_ups=True, unhandled_input=exit)
+        m.set_alarm_in(1, refresh)
+        m.run()
